@@ -38,11 +38,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import com.ayni.backend.notification.service.EmailService;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-
+    private final EmailService emailService;
     private static final BigDecimal DEFAULT_SHIPPING_COST = new BigDecimal("5.00");
 
     private final UserRepository userRepository;
@@ -93,7 +93,11 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         List<OrderDetail> details = saveOrderDetails(savedOrder, cartItems);
-
+        emailService.sendOrderCreated(
+                user.getEmail(),
+                savedOrder.getCodigoPedido(),
+                savedOrder.getTotal().toString()
+        );
         discountStock(cartItems);
 
         cartItemRepository.deleteByCartId(cart.getId());
@@ -143,7 +147,10 @@ public class OrderServiceImpl implements OrderService {
         Order updatedOrder = orderRepository.save(order);
 
         List<OrderDetail> details = orderDetailRepository.findByOrderIdOrderByIdAsc(updatedOrder.getId());
-
+        emailService.sendYapePaymentReceived(
+                updatedOrder.getUser().getEmail(),
+                updatedOrder.getCodigoPedido()
+        );
         return orderMapper.toResponse(updatedOrder, details, savedPayment);
     }
 
@@ -336,4 +343,6 @@ public class OrderServiceImpl implements OrderService {
             productRepository.save(product);
         }
     }
+
+
 }

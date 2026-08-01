@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import com.ayni.backend.notification.service.EmailService;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class NewsletterServiceImpl implements NewsletterService {
 
     private final NewsletterRepository newsletterRepository;
     private final NewsletterMapper newsletterMapper;
+    private final EmailService emailService;
 
     @Override
     public NewsletterSubscriberResponse subscribe(NewsletterSubscribeRequest request) {
@@ -34,6 +36,10 @@ public class NewsletterServiceImpl implements NewsletterService {
                 .creadoEn(LocalDateTime.now())
                 .build();
 
-        return newsletterMapper.toResponse(newsletterRepository.save(subscriber));
+        NewsletterSubscriber savedSubscriber = newsletterRepository.save(subscriber);
+
+        emailService.sendWelcomeNewsletter(savedSubscriber.getEmail());
+
+        return newsletterMapper.toResponse(savedSubscriber);
     }
 }

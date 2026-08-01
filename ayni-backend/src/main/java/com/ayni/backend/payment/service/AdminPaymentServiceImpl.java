@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.time.LocalDateTime;
+import com.ayni.backend.notification.service.EmailService;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class AdminPaymentServiceImpl implements AdminPaymentService {
     private final PaymentRepository paymentRepository;
     private final YapePaymentDetailRepository yapePaymentDetailRepository;
     private final OrderRepository orderRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -62,6 +64,13 @@ public class AdminPaymentServiceImpl implements AdminPaymentService {
         }
 
         updateOrderStatus(savedPayment.getOrder(), request.estado());
+
+        if (savedPayment.getEstado() == PaymentStatus.VALIDADO) {
+            emailService.sendPaymentValidated(
+                    savedPayment.getOrder().getUser().getEmail(),
+                    savedPayment.getOrder().getCodigoPedido()
+            );
+        }
 
         return toResponse(savedPayment, yapeDetail);
     }
