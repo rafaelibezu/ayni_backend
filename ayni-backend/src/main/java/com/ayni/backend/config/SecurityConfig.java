@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(ApiRoutes.CATEGORIES + "/**").permitAll()
                         .requestMatchers(ApiRoutes.PRODUCTS + "/**").permitAll()
                         .requestMatchers(ApiRoutes.NEWSLETTER + "/subscribe").permitAll()
+                        .requestMatchers("/api/v1/chatbot/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
