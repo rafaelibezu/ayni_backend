@@ -55,7 +55,7 @@ public class ChatbotService {
         // 5. Preparamos el payload para Groq
         GroqRequest groqPayload = new GroqRequest(apiModel, messages);
 
-        // 6. Consumimos la API de Groq
+        // 6. Consumimos la API de Groq jeje
         GroqResponse response = restClient.post()
                 .uri(apiUrl)
                 .header("Authorization", "Bearer " + apiKey)
